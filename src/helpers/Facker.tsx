@@ -1,7 +1,7 @@
 import _merge from 'lodash-es/merge';
 import storage from 'app/helpers/storage';
 import utils from 'app/helpers/utils';
-import { KEY_USERS } from 'app/service/auth';
+import { KEY_TOKEN, KEY_USERS } from 'app/service/auth';
 
 /***
  * ==========================================================================
@@ -44,13 +44,15 @@ export class Facker {
             if (filteredUsers.length) {
                 // if login details are valid return user details and fake jwt token
                 let user = filteredUsers[0];
+                const token = {};
                 let responseJson = {
                     id: user.id,
                     username: user.username,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    token: utils.randomString(32),
                 };
+                token[utils.randomString(32)] = responseJson;
+                storage.set(KEY_TOKEN, token);
                 return Promise.resolve({
                     status: 200,
                     ok: true,

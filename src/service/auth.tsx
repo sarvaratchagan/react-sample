@@ -174,17 +174,17 @@ function* authSuccess(action) {
 
 function* register(action) {
     try {
-        // effects(call, put):
-        // trigger off the code that we want to call that is asynchronous
-        // and also dispatched the result from that asynchrous code.
-        const loginData: AccountData = action.payload;
+        const userData: AccountData = action.payload;
         yield put(globalActions.showLoading('Logging in...'));
         const tokenInfo: TokenInfo = yield call(service.register, {
-            ...loginData,
+            ...userData,
         });
         yield put(actions.registerSuccess(tokenInfo));
         yield put(globalActions.hideLoading());
         yield put(push('/login'));
+        yield put(
+            globalActions.notifySuccess('Successfully registered you account'),
+        );
     } catch (err) {
         yield put(globalActions.hideLoading());
         if (err) {
