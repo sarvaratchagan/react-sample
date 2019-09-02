@@ -1,12 +1,10 @@
 import * as React from 'react';
-import { User, Post, actions as postActions } from 'app/service/posts';
-import { Action, Dispatch } from 'redux';
+import { User, Post } from 'app/service/posts';
 import { connect } from 'react-redux';
+import Loading from './Loading';
 
 interface PostComponentProps {
     key?: number;
-    postId?: number;
-    userId?: number;
     readUser?: (id: number) => void;
     readPost?: (id: number) => void;
     user?: User;
@@ -21,21 +19,12 @@ class MyPost extends React.Component<PostComponentProps> {
         super(props);
     }
 
-    componentDidMount() {
-        if (this.props.postId) {
-            this.props.readUser(this.props.postId);
-        }
-
-        if (this.props.userId) {
-            this.props.readPost(this.props.userId);
-        }
-    }
-
     public render() {
-        const { user, post } = this.props;
+        const { user, post, loading, loadingText } = this.props;
 
         return (
-            <div className="col-lg-4">
+            <div className="col-lg-4 col-md-6 col-sm-12 pt-3 pb-3 align-items-stretch">
+                {loading && <Loading loadingText={loadingText} />}
                 {user && post && (
                     <div className="card">
                         <div className="card-header">
@@ -54,24 +43,7 @@ class MyPost extends React.Component<PostComponentProps> {
     }
 }
 
-const mapStateToProps = state => ({
-    post: state.posts.post,
-    user: state.posts.user,
-    error: state.posts.error,
-    loading: state.global.loading,
-    loadingText: state.global.loadingText,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
-    readPost: (id: number): void => {
-        dispatch(postActions.post(id));
-    },
-    readUser: (id: number): void => {
-        dispatch(postActions.user(id));
-    },
-});
-
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
+    null,
+    null,
 )(MyPost);

@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { actions as globalActions } from './global';
 import { Ajax, AjaxError } from 'app/helpers/ajax';
 import { AxiosPromise } from 'axios';
@@ -11,9 +11,9 @@ const ACTION_POST_REQUEST = 'USER_POST_REQUEST';
 const ACTION_POST_SUCCESS = 'USER_POST_SUCCESS';
 const ACTION_POST_FAILURE = 'USER_POST_FAILURE';
 
-const ACTION_USER_REQUEST = 'READ_USER_REQUEST';
-const ACTION_USER_SUCCESS = 'READ_USER_SUCCESS';
-const ACTION_USER_FAILURE = 'READ_USER_FAILURE';
+const ACTION_USERS_REQUEST = 'READ_USERS_REQUEST';
+const ACTION_USERS_SUCCESS = 'READ_USERS_SUCCESS';
+const ACTION_USERS_FAILURE = 'READ_USERS_FAILURE';
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
@@ -77,16 +77,15 @@ export const actions = {
     }),
 
     // users
-    user: (id: number) => ({
-        type: ACTION_USER_REQUEST,
-        payload: id,
+    users: () => ({
+        type: ACTION_USERS_REQUEST,
     }),
-    userSuccess: (response: User) => ({
-        type: ACTION_USER_SUCCESS,
+    usersSuccess: (response: User[]) => ({
+        type: ACTION_USERS_SUCCESS,
         payload: response,
     }),
-    userFailure: error => ({
-        type: ACTION_USER_FAILURE,
+    usersFailure: error => ({
+        type: ACTION_USERS_FAILURE,
         payload: error,
     }),
 
@@ -125,18 +124,18 @@ export function reducer(state: AppState = {}, action): AppState {
             };
 
         // users
-        case ACTION_USER_REQUEST:
+        case ACTION_USERS_REQUEST:
             return {
                 ...state,
             };
 
-        case ACTION_USER_SUCCESS:
+        case ACTION_USERS_SUCCESS:
             return {
                 ...state,
-                user: action.payload,
+                users: action.payload,
             };
 
-        case ACTION_USER_FAILURE:
+        case ACTION_USERS_FAILURE:
             return {
                 ...state,
                 error: action.payload,
@@ -171,7 +170,7 @@ export const service = {
     post: (id: number): AxiosPromise | any => {
         return new Ajax().get(`${BASE_URL}/posts/${id}`);
     },
-    user: (): AxiosPromise | any => {
+    users: (): AxiosPromise | any => {
         return new Ajax().get(`${BASE_URL}/users`);
     },
 };
@@ -191,17 +190,18 @@ function* posts(action) {
     }
 }
 
-function* user(action) {
+function* users(action) {
     try {
+        const id: number = action.payload;
         yield put(globalActions.showLoading('Loading users...'));
-        const userInfo: User = yield call(service.user);
-        yield put(actions.userSuccess(userInfo));
+        const userInfo: User[] = yield call(service.users, id);
+        yield put(actions.usersSuccess(userInfo));
         yield put(globalActions.hideLoading());
     } catch (err) {
         yield put(globalActions.hideLoading());
         if (err) {
             const ajaxError = err as AjaxError;
-            yield put(actions.userFailure(ajaxError));
+            yield put(actions.usersFailure(ajaxError));
         }
     }
 }
@@ -224,6 +224,6 @@ function* post(action) {
 
 export function* saga() {
     yield takeLatest(ACTION_POSTS_REQUEST, posts);
-    yield takeLatest(ACTION_USER_REQUEST, user);
+    yield takeLatest(ACTION_USERS_REQUEST, users);
     yield takeLatest(ACTION_POST_REQUEST, post);
 }

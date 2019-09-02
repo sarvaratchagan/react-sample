@@ -1,8 +1,7 @@
 import * as React from 'react';
-import Spinner from 'react-bootstrap/Spinner';
+import { Spinner } from 'react-bootstrap';
 
 interface LoadingProps {
-    classes?: any;
     loadingText?: string;
 }
 
@@ -12,13 +11,11 @@ class Loading extends React.Component<LoadingProps, {}> {
     }
 
     public render() {
-        const { classes, loadingText } = this.props;
+        const { loadingText } = this.props;
         return (
-            <div className={classes.container}>
+            <div className="d-flex align-items-center justify-content-center">
                 <Spinner animation="border" variant="danger" />
-                {loadingText && (
-                    <span className={classes.labelClass}> {loadingText} </span>
-                )}
+                {loadingText && <span> {loadingText} </span>}
             </div>
         );
     }

@@ -230,7 +230,9 @@ function* login(action) {
 }
 
 function* logout(action) {
+    storage.remove(KEY_TOKEN);
     yield put(actions.logoutSuccess());
+    yield put(push('/login'));
 }
 
 function userConverter(response: any): UserInfo {
