@@ -4,7 +4,7 @@ import { AxiosPromise } from 'axios';
 import { Facker } from 'app/helpers/Facker';
 import { actions as globalActions } from './global';
 import { push } from 'connected-react-router';
-import store from '../redux/store';
+import storage from 'app/helpers/storage';
 
 export const KEY_TOKEN = 'token';
 export const KEY_USERS = 'users';
@@ -150,7 +150,6 @@ export function reducer(state: AuthState = {}, action): AuthState {
 
 export const service = {
     login: (data: LoginData) => {
-        debugger;
         const fake = new Facker();
         return fake.post('/users/authenticate', { body: JSON.stringify(data) });
     },
@@ -164,6 +163,7 @@ export const service = {
     },
     logout: (): AxiosPromise | any => {},
 };
+
 function* auth() {
     yield put(globalActions.showLoading('Redirecting to authorize...'));
 }
@@ -213,11 +213,10 @@ function* login(action) {
         yield put(actions.loginSuccess(tokenInfo));
         yield put(actions.getUserInfo(tokenInfo.access_token));
         yield put(globalActions.hideLoading());
-        // yield put(push('/admin'));
+        yield put(push('/posts'));
     } catch (err) {
         yield put(globalActions.hideLoading());
         if (err) {
-            debugger;
             const ajaxError = err as AjaxError;
             yield put(
                 globalActions.notifyError(
@@ -231,7 +230,6 @@ function* login(action) {
 }
 
 function* logout(action) {
-    console.log(action);
     yield put(actions.logoutSuccess());
 }
 
@@ -246,7 +244,6 @@ function userConverter(response: any): UserInfo {
 }
 
 function* getUser(action) {
-    console.log(action);
     try {
         yield put(globalActions.showLoading('Getting user info...'));
         const response = yield call(service.getUser);
@@ -271,10 +268,7 @@ export function* saga() {
     yield takeLatest(ACTION_GETUSER_REQUEST, getUser);
 }
 
-export function getState(): AuthState {
-    return store.getState().auth as AuthState;
-}
-
 export function isAuthorized(): boolean {
-    return true;
+    const token = storage.get(KEY_TOKEN);
+    return !!token;
 }

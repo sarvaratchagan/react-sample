@@ -254,7 +254,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
     register: (user: any): boolean => {
-        debugger;
         dispatch(authActions.register(user));
         return true;
     },

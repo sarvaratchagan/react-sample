@@ -189,9 +189,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
             // invalid form
             return false;
         }
-        debugger;
         dispatch(authActions.login({ username, password }));
-        return false;
+        return true;
     },
 });
 
