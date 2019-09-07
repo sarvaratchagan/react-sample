@@ -18,23 +18,57 @@ interface MainComponentProps {
     loadingText?: string;
 }
 
-class Main extends React.Component<MainComponentProps> {
+interface MainComponentState {
+    posts: Post[];
+    count: number;
+}
+
+class Main extends React.Component<MainComponentProps, MainComponentState> {
+    $timeout: any;
     public constructor(props: MainComponentProps) {
         super(props);
+        this.state = {
+            posts: [],
+            count: 0,
+        };
+        this.$timeout = null;
         this.logoutHandler = this.logoutHandler.bind(this);
+        this.updateUi = this.updateUi.bind(this);
     }
 
     public componentDidMount() {
         this.props.readPosts();
         this.props.readUsers();
+        this.schedule();
     }
 
     private logoutHandler(event) {
         this.props.logout();
     }
 
+    schedule() {
+        this.$timeout = setTimeout(this.updateUi, 100);
+    }
+
+    updateUi() {
+        // TODO replace this functionality with react-spring so that we can get very smooth results
+        if (this.props.posts.length > 0) {
+            const count = this.state.count;
+            const updatedState = {
+                posts: this.state.posts.concat(
+                    this.props.posts[this.state.count],
+                ),
+                count: count + 1,
+            };
+            this.setState(updatedState);
+            if (updatedState.count < this.props.posts.length) {
+                this.schedule();
+            }
+        }
+    }
+
     public render() {
-        const { posts, users, loading, loadingText } = this.props || {};
+        const { users, loading, loadingText } = this.props || {};
         return (
             <div className="w-100 h-100">
                 <div className="row d-flex flex-row">
@@ -58,9 +92,9 @@ class Main extends React.Component<MainComponentProps> {
                 </div>
                 <div className="row d-flex flex-row">
                     {loading && <p>{loadingText}</p>}
-                    {(posts || []).length > 0 &&
+                    {(this.state.posts || []).length > 0 &&
                         (users || []).length > 0 &&
-                        posts.map((post, i) => {
+                        this.state.posts.map((post, i) => {
                             return (
                                 <MyPost
                                     key={i}

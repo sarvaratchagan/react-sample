@@ -179,7 +179,11 @@ function* posts(action) {
     try {
         yield put(globalActions.showLoading('Loading posts...'));
         const postInfo: Post[] = yield call(service.posts);
-        yield put(actions.postsSuccess(postInfo));
+        yield put(
+            actions.postsSuccess(
+                postInfo.sort((a, b) => (a.id > b.id ? -1 : 1)),
+            ),
+        );
         yield put(globalActions.hideLoading());
     } catch (err) {
         yield put(globalActions.hideLoading());

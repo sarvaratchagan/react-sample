@@ -23,7 +23,7 @@ class MyPost extends React.Component<PostComponentProps> {
         const { user, post, loading, loadingText } = this.props;
 
         return (
-            <div className="col-lg-4 col-md-6 col-sm-12 pt-3 pb-3 align-items-stretch">
+            <div className="col-lg-4 col-md-6 col-sm-12 pt-3 pb-3 align-items-stretch fade-in">
                 {loading && <Loading loadingText={loadingText} />}
                 {user && post && (
                     <div className="card h-100">
