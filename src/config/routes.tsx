@@ -6,6 +6,7 @@ import Login from 'app/pages/auth/Login';
 import Account from 'app/pages/auth/Account';
 import Main from 'app/pages/main/Main';
 import { isAuthorized } from 'app/service/auth';
+import ViewComponent from 'app/pages/main/View';
 
 const routes = [
     {
@@ -37,6 +38,16 @@ const routes = [
         render: () => {
             if (isAuthorized()) {
                 return <Main />;
+            }
+            return <Redirect to="/login" />;
+        },
+    },
+    {
+        path: '/post/:id',
+        /* eslint-disable */
+        render: () => {
+            if (isAuthorized()) {
+                return <ViewComponent />;
             }
             return <Redirect to="/login" />;
         },

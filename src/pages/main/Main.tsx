@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { Button, FormControl, InputGroup } from 'react-bootstrap';
+import {
+    Button,
+    FormControl,
+    FormControlProps,
+    InputGroup,
+} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Post, User } from 'app/service/posts';
 import { Action, Dispatch } from 'redux';
@@ -19,8 +24,8 @@ interface MainComponentProps {
 }
 
 interface MainComponentState {
-    posts: Post[];
     count: number;
+    filtered: Post[];
 }
 
 class Main extends React.Component<MainComponentProps, MainComponentState> {
@@ -28,18 +33,25 @@ class Main extends React.Component<MainComponentProps, MainComponentState> {
     public constructor(props: MainComponentProps) {
         super(props);
         this.state = {
-            posts: [],
             count: 0,
+            filtered: [],
         };
         this.$timeout = null;
         this.logoutHandler = this.logoutHandler.bind(this);
         this.updateUi = this.updateUi.bind(this);
+        this.searchHandler = this.searchHandler.bind(this);
     }
 
     public componentDidMount() {
         this.props.readPosts();
         this.props.readUsers();
         this.schedule();
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.$timeout);
+        this.$timeout = null;
+        this.setState({ count: 0, filtered: [] });
     }
 
     private logoutHandler(event) {
@@ -52,10 +64,10 @@ class Main extends React.Component<MainComponentProps, MainComponentState> {
 
     updateUi() {
         // TODO replace this functionality with react-spring so that we can get very smooth results
-        if (this.props.posts.length > 0) {
+        if ((this.props.posts || []).length > 0) {
             const count = this.state.count;
             const updatedState = {
-                posts: this.state.posts.concat(
+                filtered: this.state.filtered.concat(
                     this.props.posts[this.state.count],
                 ),
                 count: count + 1,
@@ -64,6 +76,21 @@ class Main extends React.Component<MainComponentProps, MainComponentState> {
             if (updatedState.count < this.props.posts.length) {
                 this.schedule();
             }
+        }
+    }
+
+    searchHandler(event: React.FormEvent<FormControlProps>) {
+        const control = event.target as any;
+        const posts = this.props.posts;
+        if (control.value.trim().length > 1) {
+            const filtered = posts.filter(
+                post =>
+                    post.title.indexOf(control.value) > -1 ||
+                    post.body.indexOf(control.value) > -1,
+            );
+            this.setState({ filtered, count: filtered.length });
+        } else {
+            this.setState({ filtered: posts, count: posts.length });
         }
     }
 
@@ -83,6 +110,7 @@ class Main extends React.Component<MainComponentProps, MainComponentState> {
                     <div className="col-lg-8 col-md-12 col-sm-12 pt-4 pb-4">
                         <InputGroup>
                             <FormControl
+                                onChange={this.searchHandler}
                                 placeholder="search"
                                 aria-label="searchTerm"
                                 aria-describedby="search-term"
@@ -92,9 +120,9 @@ class Main extends React.Component<MainComponentProps, MainComponentState> {
                 </div>
                 <div className="row d-flex flex-row">
                     {loading && <p>{loadingText}</p>}
-                    {(this.state.posts || []).length > 0 &&
+                    {(this.state.filtered || []).length > 0 &&
                         (users || []).length > 0 &&
-                        this.state.posts.map((post, i) => {
+                        this.state.filtered.map((post, i) => {
                             return (
                                 <MyPost
                                     key={i}
