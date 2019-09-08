@@ -48,6 +48,11 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.ts$/, use: [{
+                    loader: 'ts-loader'
+                }]
+            },
+            {
                 test: /\.(png|jpg|gif)$/,
                 use: [
                     {
