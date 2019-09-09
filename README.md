@@ -2,8 +2,28 @@
 
 TODO:
 
-    1) Search implementation
-    2) Post with animation ( should display one by one with little delay)
-    3) HTTP connnection error with modal
-    4) View post
+    1) Unit tests
+    
+Routes
 
+    1) /login
+    2) /register
+    3) /posts
+    4) /post/{postId}
+    
+    
+clone this repository by 
+
+  ```git clone https://github.com/sarvaratchagan/react-sample.git```
+
+Install dependencies
+
+  ```npm install --verbose```
+  
+Format code
+
+  ```npm run format```
+  
+Unit tests
+
+``` npm run test ```
