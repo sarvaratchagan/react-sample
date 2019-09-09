@@ -1,10 +1,10 @@
 # react-sample
 
-TODO:
+# TODO:
 
     1) Unit tests
     
-Routes
+# Routes
 
     1) /login
     2) /register
@@ -12,18 +12,18 @@ Routes
     4) /post/{postId}
     
     
-clone this repository by 
+# clone this repository by 
 
   ```git clone https://github.com/sarvaratchagan/react-sample.git```
 
-Install dependencies
+# Install dependencies
 
   ```npm install --verbose```
   
-Format code
+# Format code
 
   ```npm run format```
   
-Unit tests
+# Unit tests
 
 ``` npm run test ```
