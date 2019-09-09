@@ -27,3 +27,7 @@
 # Unit tests
 
 ``` npm run test ```
+
+# Run
+
+``` npm start ```
